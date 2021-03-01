@@ -61,17 +61,16 @@ while True:
     current = time.monotonic()
     if current - last_print >= 1.0:
         last_print = current
+        f.write("Time: {:8.2f}\n".format(time.monotonic()-base_time))
         if not gps.has_fix:
             # Try again if we don't have a fix yet.
-            print("Waiting for fix...")
-            continue
-
+            f.write("Waiting for fix...\n")
+        else:
         #save data to black box flight_log.txt file
-        f.write("Time: {:8.2f}\n".format(time.monotonic()-base_time))
-        f.write("Latitude: {0:.6f} degrees\n".format(gps.latitude))
-        f.write("Longitude: {0:.6f} degrees\n".format(gps.longitude)) 
-        if gps.altitude_m is not None:
-            f.write("Altitude: {} meters\n".format(gps.altitude_m))
+            f.write("Latitude: {0:.6f} degrees\n".format(gps.latitude))
+            f.write("Longitude: {0:.6f} degrees\n".format(gps.longitude)) 
+            if gps.altitude_m is not None:
+                f.write("Altitude: {} meters\n".format(gps.altitude_m))
         f.write("Pressure: {:6.4f}  Temperature: {:5.2f}\n".format(bmp.pressure, bmp.temperature))
         f.write("Altitude: {} meters".format(bmp.altitude))
         f.write("\n========================================\n")
