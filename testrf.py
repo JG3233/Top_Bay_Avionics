@@ -17,7 +17,10 @@ uart =  serial.Serial(
  )
 
 while True:
-    uart.write(str.encode('Counting... ')) 
+    try:
+        uart.write(b'Counting... \n') 
+    except:
+        print('exception')
     time.sleep(1)
     counter += 1
     print('.')

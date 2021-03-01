@@ -38,7 +38,7 @@ gps.send_command(b"PMTK220,1000")
 #setup for RF over UART
 uartRF = serial.Serial(
     port='/dev/ttyAMA0',
-    baudrate = 9600,
+    baudrate = 19200,
     parity=serial.PARITY_NONE,
     stopbits=serial.STOPBITS_ONE,
     bytesize=serial.EIGHTBITS,
@@ -50,30 +50,34 @@ base_time = time.monotonic()
 last_print = time.monotonic()
 
 while True:
-    #write data over RF
-    #uartRF.write(str.encode("Time: {:8.2f}\n".format(time.monotonic()-base_time)))
-    #uartRF.write(str.encode("Pressure: {:6.4f}  Temperature: {:5.2f}\n".format(bmp.pressure, bmp.temperature)))
-    #uartRF.write(str.encode("Altitude: {} meters".format(bmp.altitude)))
-    #uartRF.write(str.encode("\n========================================\n"))
-
     gps.update()
     # Every second print out current location details if there's a fix.
     current = time.monotonic()
-    if current - last_print >= 1.0:
+    if current - last_print >= 2.0:
         last_print = current
         f.write("Time: {:8.2f}\n".format(time.monotonic()-base_time))
         if not gps.has_fix:
             # Try again if we don't have a fix yet.
             f.write("Waiting for fix...\n")
         else:
-        #save data to black box flight_log.txt file
+            #save data to black box flight_log.txt file and send over RF
             f.write("Latitude: {0:.6f} degrees\n".format(gps.latitude))
+            uartRF.write(str.encode("Lat: {0:.6f} deg\n".format(gps.latitude)))
             f.write("Longitude: {0:.6f} degrees\n".format(gps.longitude)) 
+            uartRF.write(str.encode("Long: {0:.6f} deg\n".format(gps.longitude)))
             if gps.altitude_m is not None:
                 f.write("Altitude: {} meters\n".format(gps.altitude_m))
+                uartRF.write(str.encode("Alt: {} m\n".format(gps.altitude_m)))
+        # Always write bmp data
         f.write("Pressure: {:6.4f}  Temperature: {:5.2f}\n".format(bmp.pressure, bmp.temperature))
         f.write("Altitude: {} meters".format(bmp.altitude))
-        f.write("\n========================================\n")
+        f.write("\n========================\n")
+        
         # print(".") #heartbeat for testing
+        # Also write bmp data over UART to RF
+        uartRF.write(str.encode("Time: {:8.2f}\n".format(time.monotonic()-base_time)))
+        #uartRF.write(str.encode("Pressure: {:6.4f}  Temperature: {:5.2f}\n".format(bmp.pressure, bmp.temperature)))
+        #uartRF.write(str.encode("Altitude: {} m".format(bmp.altitude)))
+        uartRF.write(str.encode("\n===\n"))
 
 
