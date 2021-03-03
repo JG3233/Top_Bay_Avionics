@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-from digi.xbee.devices import XBeeDevice
 import serial
 import time
 
@@ -18,7 +17,7 @@ uart =  serial.Serial(
 
 while True:
     try:
-        uart.write(b'Counting... \n') 
+        uart.write(str.encode("Counting... \n"))
     except:
         print('exception')
     time.sleep(1)
