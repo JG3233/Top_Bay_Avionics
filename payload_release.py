@@ -12,6 +12,7 @@ import time
 import board
 import busio
 
+from adafruit_servokit import ServoKit
 import adafruit_gps
 import adafruit_bmp3xx
 import serial
@@ -28,6 +29,10 @@ i2c = board.I2C()
 gps = adafruit_gps.GPS_GtopI2C(i2c, debug=False)  # Use I2C interface
 gps.send_command(b"PMTK314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0")
 gps.send_command(b"PMTK220,1000")
+
+#setup servo connection
+#kit = ServoKit(channels=16)
+#kit.servo[x].set_pulse_width_range(553,2520)
 
 base_time = time.monotonic()
 last_print = time.monotonic()
@@ -57,6 +62,7 @@ while True:
 
     if fall_count > 10 and current_alt > ground_alt + 200:
         # turn servo
+        # kit.servo[x].angle = 8
         print('deploying payload')
 
     #except:
