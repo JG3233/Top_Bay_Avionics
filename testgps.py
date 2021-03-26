@@ -54,7 +54,7 @@ gps.send_command(b"PMTK220,1000")
 # gps.send_command(b'PMTK220,500')
 
 # Open log file to write flight data
-f = open('flight_log_test.txt', 'w')
+#f = open('flight_log_test.txt', 'w')
 
 # Main loop runs forever printing the location, etc. every second.
 last_print = time.monotonic()
@@ -68,7 +68,6 @@ while True:
     except OSError:
         time.sleep(5)
         print('err')
-        f.write('caught update error\n')
     else:
         # Every second print out current location details if there's a fix.
         current = time.monotonic()
@@ -76,12 +75,12 @@ while True:
             last_print = current
             if not gps.has_fix:
                 # Try again if we don't have a fix yet.
-                f.write("Waiting for fix...\n")
+                print("Waiting for fix...\n")
                 continue
             # We have a fix! (gps.has_fix is true)
             # Print out details about the fix like location, date, etc.
-            f.write("=" * 40 + '\n')  # Print a separator line.
-            f.write(
+            print("=" * 40 + '\n')  # Print a separator line.
+            print(
                 "Fix timestamp: {}/{}/{} {:02}:{:02}:{:02}\n".format(
                     gps.timestamp_utc.tm_mon,  # Grab parts of the time from the
                     gps.timestamp_utc.tm_mday,  # struct_time object that holds
@@ -91,15 +90,15 @@ while True:
                     gps.timestamp_utc.tm_sec,
                 )
             )
-            f.write("Latitude: {0:.6f} degrees\n".format(gps.latitude))
-            f.write("Longitude: {0:.6f} degrees\n".format(gps.longitude))
+            print("Latitude: {0:.6f} degrees\n".format(gps.latitude))
+            print("Longitude: {0:.6f} degrees\n".format(gps.longitude))
             # print("Fix quality: {}".format(gps.fix_quality))
             # Some attributes beyond latitude, longitude and timestamp are optional
             # and might not be present.  Check if they're None before trying to use!
             # if gps.satellites is not None:
                 # print("# satellites: {}".format(gps.satellites))
             if gps.altitude_m is not None:
-                f.write("Altitude: {} meters\n".format(gps.altitude_m))
+                print("Altitude: {} meters\n".format(gps.altitude_m))
             # if gps.speed_knots is not None:
                 # print("Speed: {} knots".format(gps.speed_knots))
             # if gps.track_angle_deg is not None:

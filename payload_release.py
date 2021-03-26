@@ -31,41 +31,52 @@ gps.send_command(b"PMTK314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0")
 gps.send_command(b"PMTK220,1000")
 
 #setup servo connection
-#kit = ServoKit(channels=16)
-#kit.servo[x].set_pulse_width_range(553,2520)
+kit = ServoKit(channels=16)
+kit.servo[4].set_pulse_width_range(553,2520)
 
 base_time = time.monotonic()
 last_print = time.monotonic()
 
-falling = False
+count = 0
 fall_count = 0
-ground_alt = bmp.altitude
+ground_alt = -1
+while ground_alt < 0 or ground_alt > 250:
+    try:
+        ground_alt = int(bmp.altitude)
+    except:
+        pass
 #current_alt = ground_alt
 
+print('ground alt', ground_alt)
 #testing value
-current_alt = 1000
+current_alt = 850
 
 while True:
-    #try:
-    prev_alt = current_alt
-    #current_alt = bmp.altitude
-    
-    # Testing Value
-    current_alt -= 1
-    #print(current_alt)
+    try:
+        prev_alt = current_alt
+        #current_alt = bmp.altitude
+   
+        # Testing Values
+        count += 1
+        if count < 10:
+            current_alt += 1
+        else:
+            current_alt -= 1
+        print(current_alt)
 
-    if current_alt < prev_alt:
-        fall_count += 1
-        print(fall_count)
-    else:
-        fall_count = 0
+        if current_alt < prev_alt:
+            fall_count += 1
+            print(fall_count)
+        else:
+            fall_count = 0
 
-    if fall_count > 10 and current_alt > ground_alt + 200:
-        # turn servo
-        # kit.servo[x].angle = 8
-        print('deploying payload')
+        if fall_count > 10 and current_alt > ground_alt + 100 and current_alt - ground_alt < 650:
+            # turn servo
+            kit.servo[4].angle = 69
+            print('deploying payload')
 
-    #except:
-     #   exit
-      #  pass
+        # sleep for easy analysis during testing
+        time.sleep(.5)
+    except:
+        pass
 
